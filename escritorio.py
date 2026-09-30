@@ -1,66 +1,54 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Español++ Desktop v2.5
-Estilo macOS Golden Gate 27 / Liquid Glass
-+ Widgets
-+ Seafari (navegador ligero)
-+ IDE y 3D independientes
+Español++ Desktop v2.6
+Liquid Glass + todo con botón de cerrar claro
+Incluye: IDE, 3D, Studio 2D, Seafari, Explorador
 """
 
 import tkinter as tk
 from tkinter import messagebox
-import os
-import sys
-import subprocess
+import os, sys, subprocess
 from datetime import datetime
 
-BG       = "#0a0a12"
-GLASS    = "#141422"
-PANEL    = "#1c1c2e"
-ACCENT   = "#ff2d55"
-TEXT     = "#f5f5f7"
-TEXT_DIM = "#8e8e93"
-DOCK_BG  = "#1a1a28"
+BG, GLASS, PANEL, ACCENT = "#0a0a12", "#141422", "#1c1c2e", "#ff2d55"
+TEXT, TEXT_DIM, DOCK_BG = "#f5f5f7", "#8e8e93", "#1a1a28"
 
 class Desktop:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Español++ · Golden Gate")
+        self.root.title("Español++ Desktop")
         self.root.configure(bg=BG)
-        try:
-            self.root.geometry("1024x700")
-        except Exception:
-            pass
+        self.root.geometry("1000x680")
+        self.root.protocol("WM_DELETE_WINDOW", self.salir)
 
-        self.root.bind("<Escape>", lambda e: self.salir())
-
-        self._barra_superior()
+        self._barra()
         self._area()
         self._widgets()
         self._dock()
         self._tick()
+        self.root.mainloop()
 
-    def _barra_superior(self):
-        bar = tk.Frame(self.root, bg=GLASS, height=30)
+    def _barra(self):
+        bar = tk.Frame(self.root, bg=GLASS, height=32)
         bar.pack(side=tk.TOP, fill=tk.X)
         bar.pack_propagate(False)
 
-        tk.Label(bar, text="  ●  Español++", fg=ACCENT, bg=GLASS,
-                 font=("Segoe UI", 11, "bold")).pack(side=tk.LEFT, padx=6)
+        # Botón cerrar del propio escritorio
+        tk.Button(bar, text="✕", command=self.salir, bg="#ff5f57", fg="white",
+                  relief=tk.FLAT, font=("Segoe UI", 9, "bold"), width=3).pack(side=tk.LEFT, padx=6, pady=4)
 
-        for m in ("Archivo", "Editar", "Ver", "Ir", "Ventana", "Ayuda"):
-            tk.Label(bar, text=m, fg=TEXT_DIM, bg=GLASS,
-                     font=("Segoe UI", 9), padx=7).pack(side=tk.LEFT)
+        tk.Label(bar, text="Español++ Desktop", fg=ACCENT, bg=GLASS,
+                 font=("Segoe UI", 11, "bold")).pack(side=tk.LEFT)
 
-        self.reloj_top = tk.Label(bar, text="", fg=TEXT, bg=GLASS, font=("Segoe UI", 10))
-        self.reloj_top.pack(side=tk.RIGHT, padx=12)
+        self.reloj = tk.Label(bar, text="", fg=TEXT, bg=GLASS, font=("Segoe UI", 10))
+        self.reloj.pack(side=tk.RIGHT, padx=12)
 
     def _area(self):
         self.area = tk.Frame(self.root, bg=BG)
         self.area.pack(fill=tk.BOTH, expand=True)
 
-    def _widget(self, w, h, x, y):
+    def _w(self, w, h, x, y):
         f = tk.Frame(self.area, bg=PANEL, width=w, height=h,
                      highlightbackground="#2c2c3e", highlightthickness=1)
         f.place(x=x, y=y)
@@ -69,101 +57,77 @@ class Desktop:
         return f
 
     def _widgets(self):
-        # Reloj
-        w = self._widget(260, 140, 30, 30)
-        self.lbl_hora = tk.Label(w, text="00:00", font=("Segoe UI", 34, "bold"),
-                                 bg=PANEL, fg=TEXT)
-        self.lbl_hora.pack(pady=(18, 0))
-        self.lbl_fecha = tk.Label(w, text="", font=("Segoe UI", 10), bg=PANEL, fg=TEXT_DIM)
-        self.lbl_fecha.pack()
+        w = self._w(250, 130, 25, 25)
+        self.hora = tk.Label(w, text="00:00", font=("Segoe UI", 32, "bold"), bg=PANEL, fg=TEXT)
+        self.hora.pack(pady=(16,0))
+        self.fecha = tk.Label(w, text="", font=("Segoe UI", 10), bg=PANEL, fg=TEXT_DIM)
+        self.fecha.pack()
 
-        # Bienvenida
-        w2 = self._widget(260, 100, 30, 190)
-        tk.Label(w2, text="Liquid Glass", font=("Segoe UI", 13, "bold"),
-                 bg=PANEL, fg=ACCENT).pack(pady=(16, 2))
-        tk.Label(w2, text="Golden Gate 27 style", font=("Segoe UI", 9),
-                 bg=PANEL, fg=TEXT_DIM).pack()
-
-        # Atajos
-        w3 = self._widget(260, 210, 30, 310)
-        tk.Label(w3, text="Atajos", font=("Segoe UI", 11, "bold"),
-                 bg=PANEL, fg=TEXT).pack(pady=(10, 6))
-        for txt, cmd in [
-            ("🔥  Español++ IDE", self.abrir_ide),
-            ("🎨  3D Studio", self.abrir_3d),
-            ("🌐  Seafari", self.abrir_navegador),
-            ("📂  Archivos", self.explorador),
+        w2 = self._w(250, 220, 25, 175)
+        tk.Label(w2, text="Aplicaciones", font=("Segoe UI", 11, "bold"), bg=PANEL, fg=TEXT).pack(pady=(10,6))
+        for t, c in [
+            ("🔥  Español++ IDE", self.ide),
+            ("🎨  Studio 3D", self.studio3d),
+            ("✏️  Studio 2D (Pixel)", self.studio2d),
+            ("🌐  Seafari", self.navegador),
+            ("📂  Archivos", self.archivos),
         ]:
-            tk.Button(w3, text=txt, command=cmd, bg="#252538", fg=TEXT,
-                      relief=tk.FLAT, anchor="w", padx=10,
-                      activebackground=ACCENT).pack(fill=tk.X, padx=10, pady=2)
-
-        # Sistema
-        w4 = self._widget(240, 120, 320, 30)
-        tk.Label(w4, text="Sistema", font=("Segoe UI", 11, "bold"),
-                 bg=PANEL, fg=TEXT).pack(pady=(12, 4))
-        tk.Label(w4, text="iSH · Alpine Linux\nPython + Tkinter\nVNC Session", 
-                 font=("Segoe UI", 9), bg=PANEL, fg=TEXT_DIM, justify="left").pack()
+            tk.Button(w2, text=t, command=c, bg="#252538", fg=TEXT, relief=tk.FLAT,
+                      anchor="w", padx=10, activebackground=ACCENT).pack(fill=tk.X, padx=10, pady=2)
 
     def _dock(self):
         cont = tk.Frame(self.root, bg=BG)
-        cont.pack(side=tk.BOTTOM, fill=tk.X, pady=10)
-
-        dock = tk.Frame(cont, bg=DOCK_BG, height=60,
-                        highlightbackground="#33334a", highlightthickness=1)
+        cont.pack(side=tk.BOTTOM, fill=tk.X, pady=8)
+        dock = tk.Frame(cont, bg=DOCK_BG, height=56, highlightbackground="#333", highlightthickness=1)
         dock.pack()
         dock.pack_propagate(False)
 
-        items = [
-            ("🔥", self.abrir_ide),
-            ("🎨", self.abrir_3d),
-            ("🌐", self.abrir_navegador),
-            ("📂", self.explorador),
-            ("💻", self.terminal),
-            ("⏻", self.salir),
-        ]
-        for emoji, cmd in items:
+        for emoji, cmd in [("🔥", self.ide), ("🎨", self.studio3d), ("✏️", self.studio2d),
+                           ("🌐", self.navegador), ("📂", self.archivos), ("⏻", self.salir)]:
             tk.Button(dock, text=emoji, command=cmd, bg=DOCK_BG, fg=TEXT,
-                      font=("Segoe UI", 16), relief=tk.FLAT, width=3,
-                      activebackground=ACCENT, cursor="hand2").pack(side=tk.LEFT, padx=5, pady=6)
+                      font=("Segoe UI", 15), relief=tk.FLAT, width=3,
+                      activebackground=ACCENT).pack(side=tk.LEFT, padx=4, pady=5)
 
     def _tick(self):
-        now = datetime.now()
-        self.lbl_hora.config(text=now.strftime("%H:%M"))
-        self.lbl_fecha.config(text=now.strftime("%A %d %B").capitalize())
-        self.reloj_top.config(text=now.strftime("%H:%M:%S"))
+        n = datetime.now()
+        self.hora.config(text=n.strftime("%H:%M"))
+        self.fecha.config(text=n.strftime("%A %d %B").capitalize())
+        self.reloj.config(text=n.strftime("%H:%M:%S"))
         self.root.after(1000, self._tick)
 
-    def _lanzar(self, script):
+    def _run(self, script):
         env = os.environ.copy()
         env["DISPLAY"] = env.get("DISPLAY", ":1")
-        rutas = [
-            os.path.expanduser(f"~/Espanol-PlusPlus/{script}"),
-            os.path.join(os.getcwd(), script),
-        ]
-        for r in rutas:
+        for r in [os.path.expanduser(f"~/Espanol-PlusPlus/{script}"), os.path.join(os.getcwd(), script)]:
             if os.path.exists(r):
                 subprocess.Popen([sys.executable, r], env=env, start_new_session=True,
                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 return
-        messagebox.showwarning("No encontrado", f"No está {script}")
+        messagebox.showwarning("No encontrado", script, parent=self.root)
 
-    def abrir_ide(self):
-        self._lanzar("espanolpp_ide.py")
+    def ide(self): self._run("espanolpp_ide.py")
+    def studio3d(self):
+        self._run("espanolpp_ide.py")
+        self.root.after(1000, lambda: messagebox.showinfo("3D", "En el IDE pulsa el botón 3D Studio", parent=self.root))
+    def studio2d(self): self._run("studio2d.py")
+    def navegador(self): self._run("navegador.py")
 
-    def abrir_3d(self):
-        self._lanzar("espanolpp_ide.py")
-        self.root.after(1200, lambda: messagebox.showinfo("3D", "Abre el IDE y pulsa el botón 3D Studio"))
-
-    def abrir_navegador(self):
-        self._lanzar("navegador.py")
-
-    def explorador(self):
+    def archivos(self):
         win = tk.Toplevel(self.root)
         win.title("Archivos")
-        win.geometry("500x380")
+        win.geometry("480x360")
         win.configure(bg=BG)
+        win.protocol("WM_DELETE_WINDOW", win.destroy)
+
+        # BOTÓN CERRAR bien visible
+        top = tk.Frame(win, bg=GLASS, height=36)
+        top.pack(fill=tk.X)
+        top.pack_propagate(False)
+        tk.Button(top, text="✕ Cerrar", command=win.destroy, bg="#ff5f57", fg="white",
+                  relief=tk.FLAT, font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT, padx=6, pady=4)
+
         ruta = tk.StringVar(value=os.path.expanduser("~"))
+        tk.Label(win, textvariable=ruta, bg=GLASS, fg=TEXT, anchor="w").pack(fill=tk.X)
 
         def listar():
             lb.delete(0, tk.END)
@@ -183,28 +147,17 @@ class Desktop:
                 ruta.set(nueva)
                 listar()
 
-        tk.Label(win, textvariable=ruta, bg=GLASS, fg=TEXT, anchor="w").pack(fill=tk.X)
         tk.Button(win, text="⬆ Subir", command=lambda: (ruta.set(os.path.dirname(ruta.get()) or "/"), listar()),
                   bg=PANEL, fg=TEXT, relief=tk.FLAT).pack(anchor="w", padx=4, pady=2)
+
         lb = tk.Listbox(win, bg="#101018", fg=TEXT, font=("Consolas", 11), selectbackground=ACCENT)
         lb.pack(fill=tk.BOTH, expand=True, padx=4, pady=4)
         lb.bind("<Double-1>", entrar)
         listar()
 
-    def terminal(self):
-        try:
-            env = os.environ.copy()
-            env["DISPLAY"] = env.get("DISPLAY", ":1")
-            subprocess.Popen(["xterm", "-bg", "#0a0a12", "-fg", "#00ff9d"], env=env, start_new_session=True)
-        except Exception:
-            messagebox.showinfo("Terminal", "Usa la terminal de iSH")
-
     def salir(self):
-        if messagebox.askyesno("Salir", "¿Cerrar escritorio?\n(IDE, 3D y Seafari seguirán abiertos)"):
+        if messagebox.askyesno("Salir", "¿Cerrar el escritorio?\n(Las demás apps seguirán abiertas)", parent=self.root):
             self.root.destroy()
 
-    def run(self):
-        self.root.mainloop()
-
 if __name__ == "__main__":
-    Desktop().run()
+    Desktop()
