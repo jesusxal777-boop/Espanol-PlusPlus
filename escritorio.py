@@ -1,18 +1,37 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Español++ Desktop v2.6
-Liquid Glass + todo con botón de cerrar claro
-Incluye: IDE, 3D, Studio 2D, Seafari, Explorador
+Español++ Desktop v2.7
+Liquid Glass + reloj corregible con configuracion.py
 """
 
 import tkinter as tk
 from tkinter import messagebox
 import os, sys, subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
+import json
 
 BG, GLASS, PANEL, ACCENT = "#0a0a12", "#141422", "#1c1c2e", "#ff2d55"
 TEXT, TEXT_DIM, DOCK_BG = "#f5f5f7", "#8e8e93", "#1a1a28"
+CONFIG_PATH = os.path.expanduser("~/.espanolpp_config.json")
+
+def cargar_cfg():
+    d = {"offset_horas": 0, "offset_minutos": 0, "offset_dias": 0}
+    try:
+        if os.path.exists(CONFIG_PATH):
+            with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+                d.update(json.load(f))
+    except Exception:
+        pass
+    return d
+
+def ahora_ajustada():
+    cfg = cargar_cfg()
+    return datetime.now() + timedelta(
+        days=int(cfg.get("offset_dias", 0)),
+        hours=int(cfg.get("offset_horas", 0)),
+        minutes=int(cfg.get("offset_minutos", 0)),
+    )
 
 class Desktop:
     def __init__(self):
@@ -34,7 +53,6 @@ class Desktop:
         bar.pack(side=tk.TOP, fill=tk.X)
         bar.pack_propagate(False)
 
-        # Botón cerrar del propio escritorio
         tk.Button(bar, text="✕", command=self.salir, bg="#ff5f57", fg="white",
                   relief=tk.FLAT, font=("Segoe UI", 9, "bold"), width=3).pack(side=tk.LEFT, padx=6, pady=4)
 
@@ -63,14 +81,15 @@ class Desktop:
         self.fecha = tk.Label(w, text="", font=("Segoe UI", 10), bg=PANEL, fg=TEXT_DIM)
         self.fecha.pack()
 
-        w2 = self._w(250, 220, 25, 175)
+        w2 = self._w(250, 250, 25, 175)
         tk.Label(w2, text="Aplicaciones", font=("Segoe UI", 11, "bold"), bg=PANEL, fg=TEXT).pack(pady=(10,6))
         for t, c in [
             ("🔥  Español++ IDE", self.ide),
             ("🎨  Studio 3D", self.studio3d),
-            ("✏️  Studio 2D (Pixel)", self.studio2d),
+            ("✏️  Studio 2D", self.studio2d),
             ("🌐  Seafari", self.navegador),
             ("📂  Archivos", self.archivos),
+            ("⚙️  Configuración", self.config),
         ]:
             tk.Button(w2, text=t, command=c, bg="#252538", fg=TEXT, relief=tk.FLAT,
                       anchor="w", padx=10, activebackground=ACCENT).pack(fill=tk.X, padx=10, pady=2)
@@ -83,15 +102,15 @@ class Desktop:
         dock.pack_propagate(False)
 
         for emoji, cmd in [("🔥", self.ide), ("🎨", self.studio3d), ("✏️", self.studio2d),
-                           ("🌐", self.navegador), ("📂", self.archivos), ("⏻", self.salir)]:
+                           ("🌐", self.navegador), ("⚙️", self.config), ("⏻", self.salir)]:
             tk.Button(dock, text=emoji, command=cmd, bg=DOCK_BG, fg=TEXT,
                       font=("Segoe UI", 15), relief=tk.FLAT, width=3,
                       activebackground=ACCENT).pack(side=tk.LEFT, padx=4, pady=5)
 
     def _tick(self):
-        n = datetime.now()
+        n = ahora_ajustada()
         self.hora.config(text=n.strftime("%H:%M"))
-        self.fecha.config(text=n.strftime("%A %d %B").capitalize())
+        self.fecha.config(text=n.strftime("%A %d %B %Y").capitalize())
         self.reloj.config(text=n.strftime("%H:%M:%S"))
         self.root.after(1000, self._tick)
 
@@ -111,6 +130,7 @@ class Desktop:
         self.root.after(1000, lambda: messagebox.showinfo("3D", "En el IDE pulsa el botón 3D Studio", parent=self.root))
     def studio2d(self): self._run("studio2d.py")
     def navegador(self): self._run("navegador.py")
+    def config(self): self._run("configuracion.py")
 
     def archivos(self):
         win = tk.Toplevel(self.root)
@@ -119,7 +139,6 @@ class Desktop:
         win.configure(bg=BG)
         win.protocol("WM_DELETE_WINDOW", win.destroy)
 
-        # BOTÓN CERRAR bien visible
         top = tk.Frame(win, bg=GLASS, height=36)
         top.pack(fill=tk.X)
         top.pack_propagate(False)
