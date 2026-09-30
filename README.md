@@ -1,74 +1,72 @@
-# Español++ 
+# Español++ v2.0
 
-**Lenguaje de programación en español** con un toque picante (NSFW light) + **IDE completo escrito en Python**.
+Lenguaje de programación en **español** con toque picante + IDE profesional ligero.
 
-Ideal para aprender a programar en tu idioma... y un poco más caliente.
+## Novedades v2.0
 
-## Características del lenguaje
-
-| Español++          | Equivalente        | Descripción                          |
-|--------------------|--------------------|--------------------------------------|
-| `mete x = 10`      | var / let          | Declara o asigna una variable        |
-| `chorrea "hola"`   | print              | Muestra algo en pantalla             |
-| `pide x`           | input              | Pide un valor al usuario             |
-| `si condicion`     | if                 | Condicional                          |
-| `sino`             | else               | Sino                                 |
-| `mientras`         | while              | Bucle mientras                       |
-| `funcion nombre()` | def                | Define una función                   |
-| `regresa valor`    | return             | Regresa un valor                     |
-| `verdadero`/`falso`| true/false         | Booleanos                            |
-| `fap`              | pass               | No hace nada (pero suena bien)       |
-| `ven`              | break              | Sale del bucle                       |
-| `sigue`            | continue           | Siguiente iteración                  |
-| `# comentario`     | #                  | Comentario                           |
-
-### Ejemplo de código
-
-```espanolpp
-# Programa de ejemplo bien caliente
-mete nombre = "usuario"
-chorrea "Hola " + nombre + ", ¿listo para programar rico?"
-
-mete contador = 1
-mientras contador <= 5
-    chorrea "Vueltita número " + contador
-    mete contador = contador + 1
-
-chorrea "Se acabó... por ahora 😈"
-```
-
-## Cómo usar el IDE
-
-1. Necesitas **Python 3.8+** (viene con tkinter en la mayoría de sistemas)
-2. Descarga `espanolpp_ide.py`
-3. Ejecuta:
-
-```bash
-python espanolpp_ide.py
-```
-
-El IDE incluye:
-- Editor de código con resaltado básico
-- Botón **Ejecutar** (F5)
-- Consola de salida
-- Ejemplos integrados
-- Guardar / Abrir archivos `.epp`
-- Tema oscuro inspirado en Liquid Glass
+- **Compilador** → Traduce Español++ a Python real (`.py`)
+- **Autocompletado** básico en el IDE
+- **Funciones** (`funcion nombre(params)`)
+- **Listas** y acceso por índice
+- **Bucle para** (`para i desde 1 hasta 10`)
+- **Animaciones 2D** con canvas
+- **E++ 3D Studio** (wireframe 3D muy básico para animaciones simples)
+- Mejor resaltado de sintaxis y números de línea
+- Más keywords y mejor manejo de errores
 
 ## Instalación rápida
 
 ```bash
 git clone https://github.com/jesusxal777-boop/Espanol-PlusPlus.git
 cd Espanol-PlusPlus
-python espanolpp_ide.py
+python3 espanolpp_ide.py
 ```
 
-## Notas
+### En Alpine / iSH:
 
-- El intérprete es simple pero funcional (variables, if/else, while, funciones básicas, strings, números).
-- Los mensajes de error también están en español… y a veces un poco coquetos.
-- Hecho para diversión y aprendizaje.
+```bash
+apk add python3 python3-tkinter ttf-dejavu
+python3 espanolpp_ide.py
+```
+
+## Palabras clave principales
+
+| Español++                    | Significado                  |
+|-----------------------------|------------------------------|
+| `mete x = 10`               | Variable                     |
+| `chorrea / mostra / saca`   | Imprimir                     |
+| `pide x`                    | Input                        |
+| `si` / `sino`               | if / else                    |
+| `mientras`                  | while                        |
+| `para i desde 1 hasta 10`   | for                          |
+| `funcion nombre(a, b)`      | Definir función              |
+| `regresa valor`             | return                       |
+| `lista = [1, 2, 3]`         | Listas                       |
+| `fap`                       | pass                         |
+| `ven` / `sigue`             | break / continue             |
+| `compilar` (botón IDE)      | Genera archivo .py           |
+
+## Ejemplo con función y lista
+
+```espanolpp
+funcion saludar(nombre)
+    chorrea "Hola " + nombre + " 🔥"
+    regresa verdadero
+
+mete nombres = ["Ana", "Luis", "usuario"]
+para i desde 0 hasta 2
+    saludar(nombres[i])
+```
+
+## E++ 3D Studio (limitado)
+
+Hay un módulo experimental de animación 3D wireframe dentro del IDE (botón **3D Studio**).
+Es muy básico (solo para pruebas y animaciones simples de puntos/líneas), no es un motor 3D real.
+
+## Compilar a Python
+
+En el IDE pulsa el botón **Compilar a Python**. Se generará un archivo `.py` equivalente que puedes ejecutar con cualquier Python normal.
 
 ---
 
-Creado con 🔥 para que programar se sienta un poquito más rico.
+Hecho para que programar en español se sienta potente (y un poco caliente).
