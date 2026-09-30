@@ -1,0 +1,22 @@
+# Ejemplo juguetón de Español++
+# Función especial: si padre y madre cogen → nace usuario
+
+chorrea "=== Simulación familiar ==="
+chorrea ""
+
+mete padre = "caliente"
+mete madre = "caliente"
+
+# La función mágica
+si padre == "caliente"
+    si madre == "caliente"
+        mete resultado = "usuario"
+        chorrea "padre y madre cogen..."
+        chorrea "Resultado: nace " + resultado + " 🔥"
+    sino
+        chorrea "Falta calor en casa..."
+sino
+    chorrea "El padre está frío ❄️"
+
+chorrea ""
+chorrea "Fin de la simulación."
