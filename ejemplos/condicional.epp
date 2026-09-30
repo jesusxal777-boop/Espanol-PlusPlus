@@ -1,0 +1,8 @@
+# Ejemplo con si / sino
+chorrea "¿Cuántos años tienes?"
+pide edad
+
+si edad >= 18
+    chorrea "Eres mayor de edad. Puedes entrar al club 🔥"
+sino
+    chorrea "Todavía no... pero el código no discrimina."

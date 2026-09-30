@@ -1,0 +1,6 @@
+# Hola mundo en Español++
+chorrea "¡Hola mundo!"
+chorrea "Esto es Español++ 🔥"
+
+mete nombre = "usuario"
+chorrea "Bienvenido, " + nombre

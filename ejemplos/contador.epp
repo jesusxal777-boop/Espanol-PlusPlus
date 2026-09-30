@@ -1,0 +1,7 @@
+# Contador caliente
+mete i = 1
+mientras i <= 10
+    chorrea "Golpe número " + i
+    mete i = i + 1
+
+chorrea "Se acabó el conteo... ¿otra ronda?"
