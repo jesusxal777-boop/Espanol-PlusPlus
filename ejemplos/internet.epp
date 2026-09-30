@@ -1,0 +1,21 @@
+# Ejemplo de funciones de internet (legítimas)
+# Funciona en espanolpp_terminal.py y en el IDE
+
+chorrea "=== Prueba de internet ==="
+chorrea ""
+
+chorrea "¿Hay internet?"
+chorrea hay_internet()
+
+chorrea ""
+chorrea "Ping a google.com:"
+chorrea ping("google.com")
+
+chorrea ""
+chorrea "Mi IP pública:"
+chorrea mi_ip()
+
+chorrea ""
+chorrea "Primeros caracteres de example.com:"
+mete pagina = obtener("https://example.com")
+chorrea pagina
