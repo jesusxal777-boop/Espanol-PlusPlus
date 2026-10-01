@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Español++ Desktop v2.7
-Liquid Glass + reloj corregible con configuracion.py
+Español++ Desktop v2.8
+Incluye Photo Editor
 """
 
 import tkinter as tk
@@ -38,7 +38,7 @@ class Desktop:
         self.root = tk.Tk()
         self.root.title("Español++ Desktop")
         self.root.configure(bg=BG)
-        self.root.geometry("1000x680")
+        self.root.geometry("1000x700")
         self.root.protocol("WM_DELETE_WINDOW", self.salir)
 
         self._barra()
@@ -52,13 +52,10 @@ class Desktop:
         bar = tk.Frame(self.root, bg=GLASS, height=32)
         bar.pack(side=tk.TOP, fill=tk.X)
         bar.pack_propagate(False)
-
         tk.Button(bar, text="✕", command=self.salir, bg="#ff5f57", fg="white",
                   relief=tk.FLAT, font=("Segoe UI", 9, "bold"), width=3).pack(side=tk.LEFT, padx=6, pady=4)
-
         tk.Label(bar, text="Español++ Desktop", fg=ACCENT, bg=GLASS,
                  font=("Segoe UI", 11, "bold")).pack(side=tk.LEFT)
-
         self.reloj = tk.Label(bar, text="", fg=TEXT, bg=GLASS, font=("Segoe UI", 10))
         self.reloj.pack(side=tk.RIGHT, padx=12)
 
@@ -75,16 +72,17 @@ class Desktop:
         return f
 
     def _widgets(self):
-        w = self._w(250, 130, 25, 25)
-        self.hora = tk.Label(w, text="00:00", font=("Segoe UI", 32, "bold"), bg=PANEL, fg=TEXT)
-        self.hora.pack(pady=(16,0))
-        self.fecha = tk.Label(w, text="", font=("Segoe UI", 10), bg=PANEL, fg=TEXT_DIM)
+        w = self._w(260, 120, 25, 20)
+        self.hora = tk.Label(w, text="00:00", font=("Segoe UI", 30, "bold"), bg=PANEL, fg=TEXT)
+        self.hora.pack(pady=(14,0))
+        self.fecha = tk.Label(w, text="", font=("Segoe UI", 9), bg=PANEL, fg=TEXT_DIM)
         self.fecha.pack()
 
-        w2 = self._w(250, 250, 25, 175)
-        tk.Label(w2, text="Aplicaciones", font=("Segoe UI", 11, "bold"), bg=PANEL, fg=TEXT).pack(pady=(10,6))
+        w2 = self._w(260, 280, 25, 155)
+        tk.Label(w2, text="Aplicaciones", font=("Segoe UI", 11, "bold"), bg=PANEL, fg=TEXT).pack(pady=(8,4))
         for t, c in [
             ("🔥  Español++ IDE", self.ide),
+            ("🖼️  Photo Editor", self.photo),
             ("🎨  Studio 3D", self.studio3d),
             ("✏️  Studio 2D", self.studio2d),
             ("🌐  Seafari", self.navegador),
@@ -92,20 +90,19 @@ class Desktop:
             ("⚙️  Configuración", self.config),
         ]:
             tk.Button(w2, text=t, command=c, bg="#252538", fg=TEXT, relief=tk.FLAT,
-                      anchor="w", padx=10, activebackground=ACCENT).pack(fill=tk.X, padx=10, pady=2)
+                      anchor="w", padx=10, activebackground=ACCENT).pack(fill=tk.X, padx=10, pady=1)
 
     def _dock(self):
         cont = tk.Frame(self.root, bg=BG)
         cont.pack(side=tk.BOTTOM, fill=tk.X, pady=8)
-        dock = tk.Frame(cont, bg=DOCK_BG, height=56, highlightbackground="#333", highlightthickness=1)
+        dock = tk.Frame(cont, bg=DOCK_BG, height=54, highlightbackground="#333", highlightthickness=1)
         dock.pack()
         dock.pack_propagate(False)
-
-        for emoji, cmd in [("🔥", self.ide), ("🎨", self.studio3d), ("✏️", self.studio2d),
-                           ("🌐", self.navegador), ("⚙️", self.config), ("⏻", self.salir)]:
+        for emoji, cmd in [("🔥", self.ide), ("🖼️", self.photo), ("🎨", self.studio3d),
+                           ("✏️", self.studio2d), ("🌐", self.navegador), ("⚙️", self.config), ("⏻", self.salir)]:
             tk.Button(dock, text=emoji, command=cmd, bg=DOCK_BG, fg=TEXT,
-                      font=("Segoe UI", 15), relief=tk.FLAT, width=3,
-                      activebackground=ACCENT).pack(side=tk.LEFT, padx=4, pady=5)
+                      font=("Segoe UI", 14), relief=tk.FLAT, width=3,
+                      activebackground=ACCENT).pack(side=tk.LEFT, padx=3, pady=4)
 
     def _tick(self):
         n = ahora_ajustada()
@@ -125,9 +122,10 @@ class Desktop:
         messagebox.showwarning("No encontrado", script, parent=self.root)
 
     def ide(self): self._run("espanolpp_ide.py")
+    def photo(self): self._run("photo_editor.py")
     def studio3d(self):
         self._run("espanolpp_ide.py")
-        self.root.after(1000, lambda: messagebox.showinfo("3D", "En el IDE pulsa el botón 3D Studio", parent=self.root))
+        self.root.after(1000, lambda: messagebox.showinfo("3D", "En el IDE pulsa 3D Studio", parent=self.root))
     def studio2d(self): self._run("studio2d.py")
     def navegador(self): self._run("navegador.py")
     def config(self): self._run("configuracion.py")
@@ -138,16 +136,13 @@ class Desktop:
         win.geometry("480x360")
         win.configure(bg=BG)
         win.protocol("WM_DELETE_WINDOW", win.destroy)
-
         top = tk.Frame(win, bg=GLASS, height=36)
         top.pack(fill=tk.X)
         top.pack_propagate(False)
         tk.Button(top, text="✕ Cerrar", command=win.destroy, bg="#ff5f57", fg="white",
                   relief=tk.FLAT, font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT, padx=6, pady=4)
-
         ruta = tk.StringVar(value=os.path.expanduser("~"))
         tk.Label(win, textvariable=ruta, bg=GLASS, fg=TEXT, anchor="w").pack(fill=tk.X)
-
         def listar():
             lb.delete(0, tk.END)
             try:
@@ -156,7 +151,6 @@ class Desktop:
                     lb.insert(tk.END, icon + i)
             except Exception as e:
                 lb.insert(tk.END, str(e))
-
         def entrar(_):
             sel = lb.curselection()
             if not sel: return
@@ -165,17 +159,15 @@ class Desktop:
             if os.path.isdir(nueva):
                 ruta.set(nueva)
                 listar()
-
         tk.Button(win, text="⬆ Subir", command=lambda: (ruta.set(os.path.dirname(ruta.get()) or "/"), listar()),
                   bg=PANEL, fg=TEXT, relief=tk.FLAT).pack(anchor="w", padx=4, pady=2)
-
         lb = tk.Listbox(win, bg="#101018", fg=TEXT, font=("Consolas", 11), selectbackground=ACCENT)
         lb.pack(fill=tk.BOTH, expand=True, padx=4, pady=4)
         lb.bind("<Double-1>", entrar)
         listar()
 
     def salir(self):
-        if messagebox.askyesno("Salir", "¿Cerrar el escritorio?\n(Las demás apps seguirán abiertas)", parent=self.root):
+        if messagebox.askyesno("Salir", "¿Cerrar el escritorio?", parent=self.root):
             self.root.destroy()
 
 if __name__ == "__main__":
